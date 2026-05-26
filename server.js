@@ -1492,7 +1492,7 @@ let errorCount = 0;
 
 async function poll() {
   try {
-    const r = await fetch('/api/stats');
+    const r = await fetch('/api/stats?v=' + Date.now());
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     updateUI(d);
@@ -1532,11 +1532,13 @@ window.addEventListener('resize', drawSpark);
 </html>`;
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/api/stats') {
+  if (req.url.startsWith('/api/stats')) {
     res.writeHead(200, {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
     });
     res.end(JSON.stringify(getSystemInfo()));
   } else {
